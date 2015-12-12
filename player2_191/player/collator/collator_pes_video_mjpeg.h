@@ -24,6 +24,7 @@ Author :           Julian
 
 Definition of the base collator pes class implementation for player 2.
 
+
 Date        Modification                                    Name
 ----        ------------                                    --------
 12-Jun-07   Created from existing collator_pes_video.h      Julian
@@ -51,22 +52,23 @@ Date        Modification                                    Name
 
 class Collator_PesVideoMjpeg_c : public Collator_PesVideo_c
 {
-	protected:
+protected:
 
-		// Overrides for base class
-		CollatorStatus_t   FindNextStartCode(unsigned int*           CodeOffset);
+    // Overrides for base class
+    CollatorStatus_t   FindNextStartCode(       unsigned int*           CodeOffset);
 
-	public:
+public:
 
-		Collator_PesVideoMjpeg_c();
+    Collator_PesVideoMjpeg_c();
 
-		CollatorStatus_t   Reset(void);
+    CollatorStatus_t   Reset(                   void );
 
-		CollatorStatus_t    Input(PlayerInputDescriptor_t  *Input,
-								  unsigned int              DataLength,
-								  void                     *Data,
-								  bool                      NonBlocking = false,
-								  unsigned int             *DataLengthRemaining = NULL);
+    CollatorStatus_t    Input          (PlayerInputDescriptor_t  *Input,
+                                        unsigned int              DataLength,
+                                        void                     *Data,
+					bool			  NonBlocking = false,
+					unsigned int		 *DataLengthRemaining = NULL );
+
 };
 
 #endif // H_COLLATOR_PES_VIDEO_MJPEG

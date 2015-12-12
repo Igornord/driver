@@ -31,6 +31,7 @@ Date        Modification                                    Name
 #ifndef H_MONITOR
 #define H_MONITOR
 
-int monitor_signal(void);
+
+int monitor_signal       (void);
 
 #endif

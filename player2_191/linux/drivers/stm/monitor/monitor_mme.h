@@ -32,8 +32,12 @@ Date        Modification                                    Name
 #define H_MONITOR_MME
 
 #include <linux/sched.h>
+#include <linux/version.h>
+#if defined(__TDT__) && (LINUX_VERSION_CODE < KERNEL_VERSION(2, 6, 30))
+#include <asm/semaphore.h>
+#else
 #include <linux/semaphore.h>
-#include <linux/device.h>
+#endif
 
 #include "mme.h"
 #include "EVENT_Log_TransformerTypes.h"
@@ -42,29 +46,31 @@ Date        Modification                                    Name
 
 struct MMEContext_s
 {
-	unsigned int                        Id;
-	char                                TransformerName[MME_MAX_TRANSFORMER_NAME];
+    unsigned int                        Id;
+    char                                TransformerName[MME_MAX_TRANSFORMER_NAME];
 
-	unsigned int                        ClockAddress;
-	unsigned long long                  ClockMaxValue;
-	unsigned long long                  TicksPerSecond;
+    unsigned int                        ClockAddress;
+    unsigned long long                  ClockMaxValue;
+    unsigned long long                  TicksPerSecond;
 
-	struct task_struct*                 MonitorMMEThread;
-	struct semaphore                    EventReceived;
-	unsigned int                        Monitoring;
-	struct semaphore                    ThreadTerminated;
+    struct task_struct*                 MonitorMMEThread;
+    struct semaphore                    EventReceived;
+    unsigned int                        Monitoring;
+    struct semaphore                    ThreadTerminated;
 
-	MME_TransformerHandle_t             MMEHandle;
-	EVENT_LOG_CommandStatus_t           MMECommandStatus;
+    MME_TransformerHandle_t             MMEHandle;
+    EVENT_LOG_CommandStatus_t           MMECommandStatus;
 
-	struct DeviceContext_s*             DeviceContext;
+    struct DeviceContext_s*             DeviceContext;
 
-	unsigned int                        TransformerInitialized;
+    unsigned int                        TransformerInitialized;
 };
 
-int MonitorMMEInit(struct DeviceContext_s*         DeviceContext,
-				   struct MMEContext_s*            Context,
-				   unsigned int                    Id);
-int MonitorMMETerminate(struct MMEContext_s*            Context);
+
+int MonitorMMEInit                     (struct DeviceContext_s*         DeviceContext,
+                                        struct MMEContext_s*            Context,
+                                        unsigned int                    Id);
+int MonitorMMETerminate                (struct MMEContext_s*            Context);
+
 
 #endif

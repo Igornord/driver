@@ -24,6 +24,7 @@ Author :           Mark C
 
 Definition of the frame parser video vc1 class implementation for player 2.
 
+
 Date        Modification                                    Name
 ----        ------------                                    --------
 02-Mar-07   Created                                         Mark C
@@ -39,6 +40,7 @@ Date        Modification                                    Name
 
 #include "vc1.h"
 #include "frame_parser_video.h"
+
 
 // /////////////////////////////////////////////////////////////////////////
 //
@@ -61,6 +63,7 @@ Date        Modification                                    Name
 #define SLICE_ANTI_EMULATION_REQUEST                    8
 #define METADATA_ANTI_EMULATION_REQUEST                 48
 
+
 // /////////////////////////////////////////////////////////////////////////
 //
 // Locally defined structures
@@ -74,99 +77,100 @@ Date        Modification                                    Name
 /// Frame parser for VC1 video.
 class FrameParser_VideoVc1_c : public FrameParser_Video_c
 {
-	private:
+private:
 
-		Vc1VideoPicture_t           FirstFieldPictureHeader;
-		unsigned int                BackwardRefDist;
+    Vc1VideoPicture_t           FirstFieldPictureHeader;
+    unsigned int                BackwardRefDist;
 
-		bool                        RangeMapValid;
-		bool                        RangeMapYFlag;
-		unsigned int                RangeMapY;
-		bool                        RangeMapUVFlag;
-		unsigned int                RangeMapUV;
+    bool                        RangeMapValid;
+    bool                        RangeMapYFlag;
+    unsigned int                RangeMapY;
+    bool                        RangeMapUVFlag;
+    unsigned int                RangeMapUV;
 
-		//  Frame rate details
-		bool                        FrameRateValid;
-		Rational_t                  FrameRate;
-		int32_t                     FrameRateDefaultDen;
-		int32_t                     FrameRateDefaultNum;
+    //  Frame rate details
+    bool                        FrameRateValid;
+    Rational_t                  FrameRate;
+    int32_t                     FrameRateDefaultDen;
+    int32_t                     FrameRateDefaultNum;
 
-		// Functions
 
-		FrameParserStatus_t         ReadSequenceHeader(void);
-		FrameParserStatus_t         ReadEntryPointHeader(void);
-		FrameParserStatus_t         ReadSliceHeader(unsigned int                    pSlice);
-		FrameParserStatus_t         ReadPictureHeader(unsigned int                    first_field);
-		FrameParserStatus_t         ReadPictureHeaderAdvancedProfile(unsigned int                    first_field);
-		void                        ReadPictureHeaderProgressive(void);
-		void                        ReadPictureHeaderInterlacedFrame(void);
-		void                        ReadPictureHeaderInterlacedField(void);
+    // Functions
 
-	protected:
+    FrameParserStatus_t         ReadSequenceHeader(                     void );
+    FrameParserStatus_t         ReadEntryPointHeader(                   void );
+    FrameParserStatus_t         ReadSliceHeader(                        unsigned int                    pSlice );
+    FrameParserStatus_t         ReadPictureHeader(                      unsigned int                    first_field );
+    FrameParserStatus_t         ReadPictureHeaderAdvancedProfile(       unsigned int                    first_field );
+    void                        ReadPictureHeaderProgressive           (void);
+    void                        ReadPictureHeaderInterlacedFrame       (void);
+    void                        ReadPictureHeaderInterlacedField       (void);
 
-		// Data
+protected:
 
-		Vc1StreamParameters_t      *StreamParameters;
-		Vc1FrameParameters_t       *FrameParameters;
+    // Data
 
-		Vc1StreamParameters_t       CopyOfStreamParameters;
+    Vc1StreamParameters_t      *StreamParameters;
+    Vc1FrameParameters_t       *FrameParameters;
 
-		bool                        SequenceLayerMetaDataValid;
+    Vc1StreamParameters_t       CopyOfStreamParameters;
 
-		static const unsigned int   BFractionNumerator[23];
-		static const unsigned int   BFractionDenominator[23];
-		static const unsigned char  Pquant[32];
-		static const Vc1MvMode_t    MvModeLowRate[5];
-		static const Vc1MvMode_t    MvModeHighRate[5];
-		static const Vc1MvMode_t    MvMode2LowRate[4];
-		static const Vc1MvMode_t    MvMode2HighRate[4];
+    bool                        SequenceLayerMetaDataValid;
 
-		// Functions
+    static const unsigned int   BFractionNumerator[23];
+    static const unsigned int   BFractionDenominator[23];
+    static const unsigned char  Pquant[32];
+    static const Vc1MvMode_t    MvModeLowRate[5];
+    static const Vc1MvMode_t    MvModeHighRate[5];
+    static const Vc1MvMode_t    MvMode2LowRate[4];
+    static const Vc1MvMode_t    MvMode2HighRate[4];
 
-		FrameParserStatus_t         ReadSequenceLayerMetadata(void);
-		bool                        NewStreamParametersCheck(void);
-		FrameParserStatus_t         CommitFrameForDecode(void);
+    // Functions
 
-		unsigned long               BitsDotGetVc1VLC(unsigned long                   MaxBits,
-				unsigned long                   LeafNode);
-		void                        SetBFraction(unsigned int                    Fraction,
-				unsigned int*                   Numerator,
-				unsigned int*                   Denominator);
+    FrameParserStatus_t         ReadSequenceLayerMetadata(              void );
+    bool                        NewStreamParametersCheck(               void );
+    FrameParserStatus_t         CommitFrameForDecode(                   void );
 
-	public:
+    unsigned long               BitsDotGetVc1VLC(                       unsigned long                   MaxBits,
+                                                                        unsigned long                   LeafNode);
+    void                        SetBFraction                           (unsigned int                    Fraction,
+                                                                        unsigned int*                   Numerator,
+                                                                        unsigned int*                   Denominator);
 
-		//
-		// Constructor function
-		//
+public:
 
-		FrameParser_VideoVc1_c(void);
-		~FrameParser_VideoVc1_c(void);
+    //
+    // Constructor function
+    //
 
-		//
-		// Overrides for component base class functions
-		//
+    FrameParser_VideoVc1_c( void );
+    ~FrameParser_VideoVc1_c( void );
 
-		FrameParserStatus_t   Reset(void);
+    //
+    // Overrides for component base class functions
+    //
 
-		//
-		// FrameParser class functions
-		//
+    FrameParserStatus_t   Reset(                void );
 
-		FrameParserStatus_t   RegisterOutputBufferRing(Ring_t          Ring);
+    //
+    // FrameParser class functions
+    //
 
-		//
-		// Stream specific functions
-		//
+    FrameParserStatus_t   RegisterOutputBufferRing(     Ring_t          Ring );
 
-		FrameParserStatus_t   ReadHeaders(void);
+    //
+    // Stream specific functions
+    //
 
-		FrameParserStatus_t   PrepareReferenceFrameList(void);
+    FrameParserStatus_t   ReadHeaders(                                          void );
 
-		FrameParserStatus_t   ForPlayUpdateReferenceFrameList(void);
+    FrameParserStatus_t   PrepareReferenceFrameList(                            void );
 
-		FrameParserStatus_t   RevPlayProcessDecodeStacks(void);
-		FrameParserStatus_t   RevPlayGeneratePostDecodeParameterSettings(void);
-		FrameParserStatus_t   RevPlayRemoveReferenceFrameFromList(void);
+    FrameParserStatus_t   ForPlayUpdateReferenceFrameList(                      void );
+
+    FrameParserStatus_t   RevPlayProcessDecodeStacks(                           void );
+    FrameParserStatus_t   RevPlayGeneratePostDecodeParameterSettings(           void );
+    FrameParserStatus_t   RevPlayRemoveReferenceFrameFromList(                  void );
 };
 
 #endif

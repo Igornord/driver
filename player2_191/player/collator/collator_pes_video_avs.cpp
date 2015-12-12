@@ -24,6 +24,7 @@ Author :           Julian
 
 Implementation of the pes collator class for player 2.
 
+
 Date        Modification                                    Name
 ----        ------------                                    --------
 12-Jun-07   Created                                         Julian
@@ -63,11 +64,12 @@ Date        Modification                                    Name
 /// ::Reset again because the calls made by the sub-constructors will not have called
 /// our reset method.
 ///
-Collator_PesVideoAvs_c::Collator_PesVideoAvs_c(void)
+Collator_PesVideoAvs_c::Collator_PesVideoAvs_c( void )
 {
-	if (InitializationStatus != CollatorNoError)
-		return;
-	Collator_PesVideoAvs_c::Reset();
+    if( InitializationStatus != CollatorNoError )
+        return;
+
+    Collator_PesVideoAvs_c::Reset();
 }
 
 ////////////////////////////////////////////////////////////////////////////
@@ -76,27 +78,35 @@ Collator_PesVideoAvs_c::Collator_PesVideoAvs_c(void)
 ///
 /// \return void
 ///
-CollatorStatus_t Collator_PesVideoAvs_c::Reset(void)
+CollatorStatus_t Collator_PesVideoAvs_c::Reset( void )
 {
-	CollatorStatus_t Status;
+CollatorStatus_t Status;
+
 //
-	COLLATOR_DEBUG(">><<\n");
-	Status = Collator_PesVideo_c::Reset();
-	if (Status != CollatorNoError)
-		return Status;
-	Configuration.GenerateStartCodeList      = true;
-	Configuration.MaxStartCodes              = 256;
-	Configuration.StreamIdentifierMask       = PES_START_CODE_MASK;
-	Configuration.StreamIdentifierCode       = PES_START_CODE_VIDEO;
-	Configuration.BlockTerminateMask         = 0xFA;                            // Picture
-	Configuration.BlockTerminateCode         = 0xB2;
-	Configuration.IgnoreCodesRangeStart      = MPEG2_FIRST_SLICE_START_CODE + 1; // Slice codes other than first
-	Configuration.IgnoreCodesRangeEnd        = MPEG2_FIRST_SLICE_START_CODE;
-	Configuration.InsertFrameTerminateCode   = true;                            // Force the mme decode to terminate after a picture
-	Configuration.TerminalCode               = AVS_VIDEO_SEQUENCE_END_CODE;
-	Configuration.ExtendedHeaderLength       = 0;
-	Configuration.DeferredTerminateFlag      = false;
-	Configuration.StreamTerminateFlushesFrame   = true;         // Use an end of sequence to force a frame flush
-	Configuration.StreamTerminationCode         = AVS_VIDEO_SEQUENCE_END_CODE;
-	return CollatorNoError;
+
+    COLLATOR_DEBUG(">><<\n");
+
+    Status = Collator_PesVideo_c::Reset();
+    if( Status != CollatorNoError )
+        return Status;
+
+    Configuration.GenerateStartCodeList      = true;
+    Configuration.MaxStartCodes              = 256;
+
+    Configuration.StreamIdentifierMask       = PES_START_CODE_MASK;
+    Configuration.StreamIdentifierCode       = PES_START_CODE_VIDEO;
+    Configuration.BlockTerminateMask         = 0xFA;                            // Picture
+    Configuration.BlockTerminateCode         = 0xB2;
+    Configuration.IgnoreCodesRangeStart      = MPEG2_FIRST_SLICE_START_CODE+1;  // Slice codes other than first
+    Configuration.IgnoreCodesRangeEnd        = MPEG2_FIRST_SLICE_START_CODE;
+    Configuration.InsertFrameTerminateCode   = true;                            // Force the mme decode to terminate after a picture
+    Configuration.TerminalCode               = AVS_VIDEO_SEQUENCE_END_CODE;
+    Configuration.ExtendedHeaderLength       = 0;
+
+    Configuration.DeferredTerminateFlag      = false;
+
+    Configuration.StreamTerminateFlushesFrame   = true;         // Use an end of sequence to force a frame flush
+    Configuration.StreamTerminationCode         = AVS_VIDEO_SEQUENCE_END_CODE;
+
+    return CollatorNoError;
 }

@@ -25,6 +25,7 @@ Author :           Nick
 Definition of the class defining the interface to a simple ring
 storage device.
 
+
 Date        Modification                                    Name
 ----        ------------                                    --------
 11-Feb-03   Created                                         Nick
@@ -43,23 +44,23 @@ Date        Modification                                    Name
 
 class RingProtected_c : public Ring_c
 {
-	private:
+private:
 
-		OS_Mutex_t           Lock;
-		unsigned int         Limit;
-		unsigned int         NextExtract;
-		unsigned int         NextInsert;
-		uintptr_t           *Storage;
+    OS_Mutex_t           Lock;
+    unsigned int         Limit;
+    unsigned int         NextExtract;
+    unsigned int         NextInsert;
+    unsigned int        *Storage;
 
-	public:
+public:
 
-		RingProtected_c(unsigned int MaxEntries = 16);
-		~RingProtected_c(void);
+    RingProtected_c( unsigned int MaxEntries = 16 );
+    ~RingProtected_c( void );
 
-		RingStatus_t Insert(uintptr_t   Value);
-		RingStatus_t Extract(uintptr_t *Value);
-		RingStatus_t Flush(void);
-		bool         NonEmpty(void);
+    RingStatus_t Insert( unsigned int    Value );
+    RingStatus_t Extract( unsigned int  *Value );
+    RingStatus_t Flush( void );
+    bool         NonEmpty( void );
 };
 
 #endif

@@ -11,19 +11,19 @@ enum relay_source_ids
 {
 	PCMPLAYER_COMMIT_MAPPED_SAMPLES,
 
-	ST_RELAY_SOURCE_AUDIO_MANIFESTOR,   //leave room for multiple manifestors
+	ST_RELAY_SOURCE_AUDIO_MANIFESTOR,	//leave room for multiple manifestors
 	ST_RELAY_SOURCE_AUDIO_MANIFESTOR2,
 	ST_RELAY_SOURCE_AUDIO_MANIFESTOR3,
 	ST_RELAY_SOURCE_AUDIO_MANIFESTOR4,
 
-	ST_RELAY_SOURCE_VIDEO_MANIFESTOR,   //leave room for multiple manifestors
+	ST_RELAY_SOURCE_VIDEO_MANIFESTOR,	//leave room for multiple manifestors
 	ST_RELAY_SOURCE_VIDEO_MANIFESTOR2,
 	ST_RELAY_SOURCE_VIDEO_MANIFESTOR3,
 	ST_RELAY_SOURCE_VIDEO_MANIFESTOR4,
 
 	ST_RELAY_SOURCE_AUDIO_COLLATOR,
 	ST_RELAY_SOURCE_VIDEO_COLLATOR,
-
+	
 	ST_RELAY_SOURCE_AUDIO_FRAME_PARSER,
 	ST_RELAY_SOURCE_VIDEO_FRAME_PARSER,
 
@@ -43,7 +43,7 @@ enum relay_type_ids
 
 	ST_RELAY_TYPE_CODED_AUDIO_BUFFER,
 	ST_RELAY_TYPE_CODED_VIDEO_BUFFER,
-
+	
 	ST_RELAY_TYPE_PES_AUDIO_BUFFER,
 	ST_RELAY_TYPE_PES_VIDEO_BUFFER,
 
@@ -55,7 +55,7 @@ enum relay_type_ids
 	ST_RELAY_TYPE_DATA_TO_PCM5,
 	ST_RELAY_TYPE_DATA_TO_PCM6,
 	ST_RELAY_TYPE_DATA_TO_PCM7,
-
+        
 	ST_RELAY_TYPE_MME_LOG,
 
 	ST_RELAY_TYPE_CRC,
@@ -71,12 +71,11 @@ enum relay_type_ids
 //name length reserves 28 bytes for rest of header items below
 #define ST_RELAY_TYPE_NAME_LEN (64-28)
 
-struct relay_entry_s
-{
+struct relay_entry_s {
 //these first items will be writen as a buffer header
-	unsigned char name[ST_RELAY_TYPE_NAME_LEN]; //set from st_relay_types.h
+	unsigned char name[ST_RELAY_TYPE_NAME_LEN];	//set from st_relay_types.h
 
-	unsigned int x;     //slots for any metadata required by 'st_relayfs_parse'
+	unsigned int x;		//slots for any metadata required by 'st_relayfs_parse'
 	unsigned int y;
 	unsigned int z;
 
@@ -85,13 +84,12 @@ struct relay_entry_s
 	unsigned int count;
 	unsigned int len;
 //below here for internal use only
-	unsigned int active;    //controlled via debugfs
+	unsigned int active;	//controlled via debugfs 
 	struct dentry *dentry;
 };
 typedef struct relay_entry_s relay_entry_t;
 
-struct relay_video_frame_info_s     //extra info we need from video manifestor
-{
+struct relay_video_frame_info_s {	//extra info we need from video manifestor
 	unsigned int width;
 	unsigned int height;
 	unsigned int type;
@@ -109,18 +107,12 @@ void st_relayfs_freeindex(unsigned int source, unsigned int index);
 
 #else
 
-static inline int st_relayfs_open(void)
-{
-	return 0;
-}
+static inline int st_relayfs_open(void) {return 0;}
 static inline void st_relayfs_write(unsigned int id, unsigned int source,
-									unsigned char *buf, unsigned int len,
-									void *info) {}
+                                    unsigned char *buf, unsigned int len,
+				    void *info) {}
 
-static inline unsigned int st_relayfs_getindex(unsigned int source)
-{
-	return 0;
-}
+static inline unsigned int st_relayfs_getindex(unsigned int source) { return 0; }
 static inline void st_relayfs_freeindex(unsigned int source, unsigned int index) {}
 
 #endif

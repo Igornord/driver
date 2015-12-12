@@ -24,6 +24,7 @@ Author :           Chris
 
 Definition of the DivX HD frame parser video class implementation for player 2.
 
+
 Date        Modification                                    Name
 ----        ------------                                    --------
 18-Jun-07   Created                                         Chris
@@ -47,10 +48,10 @@ Date        Modification                                    Name
 class FrameParser_VideoDivxHd_c : public FrameParser_VideoDivx_c
 {
 
-	protected:
+protected:
 
-		FrameParserStatus_t  ReadVopHeader(Mpeg4VopHeader_t         *Vop);
-		FrameParserStatus_t  ReadHeaders(void);
+    FrameParserStatus_t  ReadVopHeader(       Mpeg4VopHeader_t         *Vop );
+    FrameParserStatus_t  ReadHeaders(         void );
 
 };
 

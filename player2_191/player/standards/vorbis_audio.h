@@ -22,8 +22,9 @@ license from ST.
 Source file name : vorbis_audio.h
 Author :           Julian
 
-Definition of the constants/macros that define useful things associated with
+Definition of the constants/macros that define useful things associated with 
 Ogg Vorbid audio streams.
+
 
 Date        Modification                                    Name
 ----        ------------                                    --------
@@ -46,6 +47,8 @@ Date        Modification                                    Name
 #define VORBIS_COMMENT_HEADER                   0x03
 #define VORBIS_SETUP_HEADER                     0x05
 
+
+
 ////////////////////////////////////////////////////////////////////
 ///
 /// Exploded copy of the ogg Vorbis audio frame header.
@@ -59,14 +62,14 @@ typedef struct VorbisAudioParsedFrameHeader_s
 
 typedef struct VorbisAudioStreamParameters_s
 {
-	unsigned int        VorbisVersion;
-	unsigned int        ChannelCount;
-	unsigned int        SampleRate;
-	unsigned int        BlockSize0;
-	unsigned int        BlockSize1;
-	unsigned int        SampleSize;
-	unsigned int        CodecId;
-	unsigned int        SamplesPerFrame;
+    unsigned int        VorbisVersion;
+    unsigned int        ChannelCount;
+    unsigned int        SampleRate;
+    unsigned int        BlockSize0;
+    unsigned int        BlockSize1;
+    unsigned int        SampleSize;
+    unsigned int        CodecId;
+    unsigned int        SamplesPerFrame;
 } VorbisAudioStreamParameters_t;
 
 #define BUFFER_VORBIS_AUDIO_STREAM_PARAMETERS           "VorbisAudioStreamParameters"
@@ -78,16 +81,17 @@ typedef struct VorbisAudioStreamParameters_s
 ///
 typedef struct VorbisAudioFrameParameters_s
 {
-	/// The bit rate of the frame
-	unsigned int        BitRate;
+    /// The bit rate of the frame
+    unsigned int        BitRate;
 
-	/// Size of the compressed frame (in bytes)
-	unsigned int        FrameSize;
+    /// Size of the compressed frame (in bytes)
+    unsigned int        FrameSize;
 
-	bool                SamplesPresent;                 /* true if frame contains sample data, false if header only */
+    bool                SamplesPresent;                 /* true if frame contains sample data, false if header only */
 } VorbisAudioFrameParameters_t;
 
 #define BUFFER_VORBIS_AUDIO_FRAME_PARAMETERS            "VorbisAudioFrameParameters"
 #define BUFFER_VORBIS_AUDIO_FRAME_PARAMETERS_TYPE       {BUFFER_VORBIS_AUDIO_FRAME_PARAMETERS, BufferDataTypeBase, AllocateFromOSMemory, 4, 0, true, true, sizeof(VorbisAudioFrameParameters_t)}
+
 
 #endif /* H_VORBIS_AUDIO_ */

@@ -30,6 +30,7 @@ Linux headers (which are not C++ safe).
 Note that it is not possible to export all the OSDEV_ functions as
 functions since some will break quite badly when un-inlined.
 
+
 Date        Modification                                    Name
 ----        ------------                                    --------
 10-Oct-05   Created                                         Daniel
@@ -43,7 +44,7 @@ Date        Modification                                    Name
 OSDEV_ExportSymbol(OSDEV_Malloc);
 OSDEV_ExportSymbol(OSDEV_Free);
 OSDEV_ExportSymbol(OSDEV_TranslateAddressToUncached);
-OSDEV_ExportSymbol(OSDEV_FlushCacheAll);
+OSDEV_ExportSymbol(OSDEV_PurgeCacheAll);
 OSDEV_ExportSymbol(OSDEV_FlushCacheRange);
 OSDEV_ExportSymbol(OSDEV_InvalidateCacheRange);
 OSDEV_ExportSymbol(OSDEV_SnoopCacheRange);

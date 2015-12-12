@@ -22,8 +22,9 @@ license from ST.
 Source file name : aac_audio.h
 Author :           Adam
 
-Definition of the constants/macros that define useful things associated with
+Definition of the constants/macros that define useful things associated with 
 AAC audio streams.
+
 
 Date        Modification                                    Name
 ----        ------------                                    --------
@@ -67,8 +68,8 @@ Date        Modification                                    Name
 #define AAC_AUDIO_LOAS_ASS_SYNC_WORD               0x2b7
 #define AAC_AUDIO_LOAS_EPASS_SYNC_WORD             0x4de1
 
-#define AAC_AUDIO_PROFILE_LC                       2
-#define AAC_AUDIO_PROFILE_SBR                      5
+#define AAC_AUDIO_PROFILE_LC			           2
+#define AAC_AUDIO_PROFILE_SBR			           5
 
 #define AAC_LOAS_ASS_SYNC_LENGTH_HEADER_SIZE       3
 #define AAC_LOAS_ASS_MAX_FRAME_SIZE                8192
@@ -83,8 +84,9 @@ typedef enum
 	AAC_AUDIO_MP4_FILE_FORMAT,
 	AAC_AUDIO_LOAS_FORMAT,
 	AAC_AUDIO_RAW_FORMAT,
-	AAC_AUDIO_UNDEFINED
+    AAC_AUDIO_UNDEFINED
 } AacFormatType_t;
+
 
 // same definition as the audio firwmare
 typedef enum
@@ -105,26 +107,26 @@ typedef enum
 ///
 typedef struct AacAudioParsedFrameHeader_s
 {
-	AacFormatType_t Type;
+    AacFormatType_t Type;
 
-	// Directly interpretted values
-	unsigned int SamplingFrequency; ///< Sampling frequency in Hz.
-
-	// Derived values
-	unsigned int NumberOfSamples; ///< Number of samples per channel within the frame.
-	unsigned int Length; ///< Length of frame in bytes (including header).
+    // Directly interpretted values
+    unsigned int SamplingFrequency; ///< Sampling frequency in Hz.
+	
+    // Derived values
+    unsigned int NumberOfSamples; ///< Number of samples per channel within the frame.
+    unsigned int Length; ///< Length of frame in bytes (including header).
 } AacAudioParsedFrameHeader_t;
 
 ////////////////////////////////////////////////////////////////
 
 typedef struct AacAudioStreamParameters_s
 {
-	/// MPEG Layer to be decoded.
-	///
-	/// The ACC firmware requires different configuration parameters for Layer III audio.
-	/// This makes the Layer a stream parameters (since the layer can only be changed
-	/// by issuing a MME_CommandCode_t::MME_SET_GLOBAL_TRANSFORM_PARAMS command).
-	unsigned int Layer;
+    /// MPEG Layer to be decoded.
+    ///
+    /// The ACC firmware requires different configuration parameters for Layer III audio.
+    /// This makes the Layer a stream parameters (since the layer can only be changed
+    /// by issuing a MME_CommandCode_t::MME_SET_GLOBAL_TRANSFORM_PARAMS command).
+    unsigned int Layer;
 } AacAudioStreamParameters_t;
 
 #define BUFFER_AAC_AUDIO_STREAM_PARAMETERS        "AacAudioStreamParameters"
@@ -142,9 +144,9 @@ typedef struct AacAudioStreamParameters_s
 ///
 typedef struct AacAudioFrameParameters_s
 {
-	AacFormatType_t Type;
-	/// Size of the compressed frame (in bytes)
-	unsigned int FrameSize;
+    AacFormatType_t Type;
+    /// Size of the compressed frame (in bytes)
+    unsigned int FrameSize;
 } AacAudioFrameParameters_t;
 
 #define BUFFER_AAC_AUDIO_FRAME_PARAMETERS        "AacAudioFrameParameters"

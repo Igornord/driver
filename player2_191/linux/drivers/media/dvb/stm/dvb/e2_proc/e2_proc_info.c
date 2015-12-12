@@ -2,13 +2,16 @@
  * e2_proc_info.c
  */
 
-#include <linux/proc_fs.h>      /* proc fs */
-#include <asm/uaccess.h>        /* copy_from_user */
+#include <linux/proc_fs.h>  	/* proc fs */
+#include <asm/uaccess.h>    	/* copy_from_user */
 
-int proc_info_model_read(char *page, char **start, off_t off, int count, int *eof, void *data_unused)
+
+int proc_info_model_read (char *page, char **start, off_t off, int count,
+			  int *eof, void *data_unused)
 {
 	int len = 0;
 	printk("%s\n", __FUNCTION__);
+
 #if defined(CUBEREVO)
 	len = sprintf(page, "cuberevo\n");
 #elif defined(CUBEREVO_MINI)
@@ -33,8 +36,6 @@ int proc_info_model_read(char *page, char **start, off_t off, int count, int *eo
 	len = sprintf(page, "vip2-v1\n");
 #elif defined(UFS922)
 	len = sprintf(page, "ufs922\n");
-#elif defined(UFC960)
-	len = sprintf(page, "ufc960\n");
 #elif defined(FORTIS_HDBOX)
 	len = sprintf(page, "hdbox\n");
 #elif defined(IPBOX9900)
@@ -44,20 +45,11 @@ int proc_info_model_read(char *page, char **start, off_t off, int count, int *eo
 #elif defined(IPBOX55)
 	len = sprintf(page, "ipbox55\n");
 #elif defined(ADB_BOX)
-	len = sprintf(page, "adb_box\n");
-#elif defined(VITAMIN_HD5000)
-	len = sprintf(page, "vitamin_hd5000\n");
-#elif defined(SAGEMCOM88)
-	len = sprintf(page, "sagemcom88\n");
-#elif defined(ARIVALINK200)
-	len = sprintf(page, "ariva@link200\n");
-#elif defined(FORTIS_DP7000)
-	len = sprintf(page, "dp7000\n");
-#elif defined(UFS910)
-	len = sprintf(page, "ufs910\n");
+    len = sprintf(page, "adb_box\n"); 
 #else
-	len = sprintf(page, "unknown\n");
+	len = sprintf(page, "ufs910\n");
 #endif
-	return len;
+
+        return len;
 }
 

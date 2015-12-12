@@ -9,8 +9,8 @@
 #ifndef ASF_GUIDS_H
 #define ASF_GUIDS_H
 
-enum asf_guid_index
-{
+
+enum asf_guid_index {
 	ASF_GUID_INVALID_IDENTIFIER,
 	ASF_GUID_HEADER_OBJECT,
 	ASF_GUID_DATA_OBJECT,

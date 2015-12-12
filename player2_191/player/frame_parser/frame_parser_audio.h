@@ -24,6 +24,7 @@ Author :           Daniel
 
 Definition of the frame parser video base class implementation for player 2.
 
+
 Date        Modification                                    Name
 ----        ------------                                    --------
 30-Mar-07   Created (from frame_parser_video.h)             Daniel
@@ -52,56 +53,57 @@ Date        Modification                                    Name
 /// Framework to unify the approach to audio frame parsing.
 class FrameParser_Audio_c : public FrameParser_Base_c
 {
-	protected:
+protected:
 
-		// Data
+    // Data
 
-		ParsedAudioParameters_t  *ParsedAudioParameters;
+    ParsedAudioParameters_t	 *ParsedAudioParameters;
 
-		/// The maximum value by which the actual PTS is permitted to differ from the synthesised PTS
-		/// (use to identify bad streams or poor predictions).
-		int PtsJitterTollerenceThreshold;
+    /// The maximum value by which the actual PTS is permitted to differ from the synthesised PTS
+    /// (use to identify bad streams or poor predictions).
+    int PtsJitterTollerenceThreshold;
+    
+    /// Time at which that previous frame was to be presented.
+    /// This is primarily used for debugging PTS sequencing problems (e.g. calculating deltas between
+    /// 'then' and 'now'.
+    unsigned long long LastNormalizedPlaybackTime;
+    /// Expected time at which the following frame must be presented.
+    unsigned long long  NextFrameNormalizedPlaybackTime;
+    /// Error that is accumulated by calculating the PTS based on its last recorded value.
+    unsigned long long NextFramePlaybackTimeAccumulatedError;
+    
+    bool UpdateStreamParameters; ///< True if we need to update the stream parameters on the next frame.
+    
+    // Functions
 
-		/// Time at which that previous frame was to be presented.
-		/// This is primarily used for debugging PTS sequencing problems (e.g. calculating deltas between
-		/// 'then' and 'now'.
-		unsigned long long LastNormalizedPlaybackTime;
-		/// Expected time at which the following frame must be presented.
-		unsigned long long  NextFrameNormalizedPlaybackTime;
-		/// Error that is accumulated by calculating the PTS based on its last recorded value.
-		unsigned long long NextFramePlaybackTimeAccumulatedError;
+    FrameParserStatus_t HandleCurrentFrameNormalizedPlaybackTime();
+    void HandleUpdateStreamParameters();
+    void GenerateNextFrameNormalizedPlaybackTime(unsigned int SampleCount, unsigned SamplingFrequency);
 
-		bool UpdateStreamParameters; ///< True if we need to update the stream parameters on the next frame.
 
-		// Functions
+public:
 
-		FrameParserStatus_t HandleCurrentFrameNormalizedPlaybackTime();
-		void HandleUpdateStreamParameters();
-		void GenerateNextFrameNormalizedPlaybackTime(unsigned int SampleCount, unsigned SamplingFrequency);
+    FrameParser_Audio_c();
+    
+    //
+    // Overrides for component base class functions
+    //
 
-	public:
+    FrameParserStatus_t   Reset(		void );
 
-		FrameParser_Audio_c();
+    //
+    // FrameParser class functions
+    //
 
-		//
-		// Overrides for component base class functions
-		//
+    FrameParserStatus_t   RegisterOutputBufferRing(	Ring_t		Ring );
 
-		FrameParserStatus_t   Reset(void);
+    FrameParserStatus_t   Input(			Buffer_t		  CodedBuffer );
 
-		//
-		// FrameParser class functions
-		//
+    //
+    // Common portion of read headers
+    //
 
-		FrameParserStatus_t   RegisterOutputBufferRing(Ring_t       Ring);
-
-		FrameParserStatus_t   Input(Buffer_t          CodedBuffer);
-
-		//
-		// Common portion of read headers
-		//
-
-		virtual FrameParserStatus_t   ReadHeaders(void);
+    virtual FrameParserStatus_t   ReadHeaders(		void );
 
 };
 

@@ -8,6 +8,7 @@
 **  &copy; 2008 ST Microelectronics. All Rights Reserved.
 */
 
+
 #ifndef __EVENT_LOG_TRANSFORMER_TYPES_H
 #define __EVENT_LOG_TRANSFORMER_TYPES_H
 
@@ -21,24 +22,23 @@
 /*
 ** EVENT_LOG_SetGlobalParamSequence_t :
 */
-typedef struct
-{
+typedef struct {
 	U32                  StructSize;                     /* Size of the structure in bytes */
 } EVENT_LOG_SetGlobalParamSequence_t;
 
 /*
 ** EVENT_LOG_TransformParam_t :
 */
-typedef struct
-{
+typedef struct {
 	U32                          StructSize;                         /* Size of the structure in bytes */
 } EVENT_LOG_TransformParam_t;
+
+
 
 /*
 ** EVENT_LOG_InitTransformerParam_t:
 */
-typedef struct
-{
+typedef struct {
 	U32                          StructSize;                         /* Size of the structure in bytes */
 	U32                          TimeCodeMemoryAddress;              /* Physical Memory address of the time code */
 } EVENT_LOG_InitTransformerParam_t;
@@ -46,13 +46,11 @@ typedef struct
 /*
 ** EVENT_LOG_CommandStatus_t:
 */
-typedef struct
-{
+typedef struct {
 	U32                  StructSize;                       /* Size of the structure in bytes */
 } EVENT_LOG_TransformerCapability_t;
 
-typedef struct
-{
+typedef struct {
 	U32 StructSize;  /* Size of the structure in bytes */
 
 	U32 EventID;     /* 0 = No Event */

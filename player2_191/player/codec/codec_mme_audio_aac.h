@@ -24,6 +24,7 @@ Author :           Adam
 
 Definition of the stream specific codec implementation for aac audio in player 2
 
+
 Date        Modification                                    Name
 ----        ------------                                    --------
 06-Jul-07   Created (from codec_mme_audio_mpeg.h)           Adam
@@ -44,6 +45,7 @@ Date        Modification                                    Name
 // Locally defined constants
 //
 
+
 // /////////////////////////////////////////////////////////////////////////
 //
 // Locally defined structures
@@ -56,33 +58,35 @@ Date        Modification                                    Name
 
 class Codec_MmeAudioAac_c : public Codec_MmeAudio_c
 {
-	protected:
+protected:
 
-		// Data
-		eAccDecoderId DecoderId;
-		// Functions
+    // Data
+    
+    eAccDecoderId DecoderId;
 
-	public:
+    // Functions
 
-		//
-		// Constructor/Destructor methods
-		//
+public:
 
-		Codec_MmeAudioAac_c(void);
-		~Codec_MmeAudioAac_c(void);
+    //
+    // Constructor/Destructor methods
+    //
 
-		//
-		// Stream specific functions
-		//
+    Codec_MmeAudioAac_c(		void );
+    ~Codec_MmeAudioAac_c(		void );
 
-	protected:
+    //
+    // Stream specific functions
+    //
 
-		CodecStatus_t   FillOutTransformerGlobalParameters(MME_LxAudioDecoderGlobalParams_t *GlobalParams);
-		CodecStatus_t   FillOutTransformerInitializationParameters(void);
-		CodecStatus_t   FillOutSetStreamParametersCommand(void);
-		CodecStatus_t   FillOutDecodeCommand(void);
-		CodecStatus_t   ValidateDecodeContext(CodecBaseDecodeContext_t *Context);
-		CodecStatus_t   DumpSetStreamParameters(void    *Parameters);
-		CodecStatus_t   DumpDecodeParameters(void   *Parameters);
+protected:
+
+    CodecStatus_t   FillOutTransformerGlobalParameters        ( MME_LxAudioDecoderGlobalParams_t *GlobalParams );
+    CodecStatus_t   FillOutTransformerInitializationParameters( void );
+    CodecStatus_t   FillOutSetStreamParametersCommand( 		void );
+    CodecStatus_t   FillOutDecodeCommand(       		void );
+    CodecStatus_t   ValidateDecodeContext( CodecBaseDecodeContext_t *Context );
+    CodecStatus_t   DumpSetStreamParameters( 			void	*Parameters );
+    CodecStatus_t   DumpDecodeParameters( 			void	*Parameters );
 };
 #endif

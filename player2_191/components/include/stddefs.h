@@ -12,6 +12,7 @@ Copyright (C) 1999 STMicroelectronics
 #ifndef __VC9_STDDEFS_H
 #define __VC9_STDDEFS_H
 
+
 /* Includes ---------------------------------------------------------------- */
 
 #ifdef __cplusplus
@@ -55,18 +56,18 @@ typedef signed int   S32;
 #ifndef DEFINED_ERRORCODE
 #define DEFINED_ERRORCODE
 typedef int ST_ErrorCode_t;
-#endif
-
+#endif	
+	
 /* Boolean type (values should be among TRUE and FALSE constants only) */
 #ifndef DEFINED_BOOL
 #define DEFINED_BOOL
 typedef int BOOL;
 /* BOOL type constant values */
 #ifndef TRUE
-#define TRUE (1 == 1)
+    #define TRUE (1 == 1)
 #endif
 #ifndef FALSE
-#define FALSE (!TRUE)
+    #define FALSE (!TRUE)
 #endif
 #endif
 
@@ -77,4 +78,5 @@ typedef int BOOL;
 #endif  /* #ifndef __STDDEFS_H */
 
 /* End of stddefs.h  ------------------------------------------------------- */
+
 
