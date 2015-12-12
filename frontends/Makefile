@@ -83,7 +83,6 @@ spark7162-objs += spark7162/D3501.o
 
 spark7162-objs += spark_dvbapi5/ix7306.o
 spark7162-objs += spark_common/vz7903.o
-spark7162-objs += spark_common/dvb_dummy_fe.o
 spark7162-objs += spark7162/base/sharp7803.o
 spark7162-objs += spark7162/base/sharp6465.o
 spark7162-objs += spark7162/base/sharp5469c.o
@@ -101,23 +100,17 @@ spark7162-objs += spark7162/stv0367/stv0367qam/stv0367qam_drv.o
 spark7162-objs += spark7162/stv0367/stv0367qam/d0367_qam.o
 
 spark7162-objs += spark7162/6158/d6158.o
-spark7162-objs += spark7162/6158/d6158_dvb.o
-spark7162-objs += spark7162/6158/nim_panic6158.o
 spark7162-objs += spark7162/6158/MN88472_autoctrl.o
 spark7162-objs += spark7162/6158/MN88472_register.o
 spark7162-objs += spark7162/6158/MN88472_variable.o
 
-spark7162-objs += spark7162/tuner/MxL301_Ext/mxl301rf.o
-spark7162-objs += spark7162/tuner/MxL301_Ext/mxl_common.o
-spark7162-objs += spark7162/tuner/MxL301_Ext/mxl_spur_table.o
-spark7162-objs += spark7162/tuner/MxL301_Ext/mxL_user_define.o
-spark7162-objs += spark7162/tuner/MxL301_Ext/tun_mxl301.o
-
-spark7162-objs += spark7162/tuner/MxL603/MxL603_TunerApi.o
-spark7162-objs += spark7162/tuner/MxL603/MxL603_TunerCfg.o
-spark7162-objs += spark7162/tuner/MxL603/tun_mxl603.o
+spark7162-objs += spark7162/tuner/mxl301rf.o
+spark7162-objs += spark7162/tuner/mxl_common.o
+spark7162-objs += spark7162/tuner/mxl_spur_table.o
+spark7162-objs += spark7162/tuner/mxL_user_define.o
 
 obj-m += spark7162.o
+obj-y += lnb/
 endif
 
 ifdef UFS912
