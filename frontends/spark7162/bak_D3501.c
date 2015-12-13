@@ -338,8 +338,8 @@ static const UINT8 snr_tab[177] =
 ////static INT32 nim_s3501_get_freq(struct nim_device *dev, UINT32 *freq);
 //static INT32 nim_s3501_get_symbol_rate(struct nim_device *dev, UINT32 *sym_rate);
 //static INT32 nim_s3501_get_code_rate(struct nim_device *dev, UINT8 *code_rate);
-static INT32 nim_s3501_get_AGC(struct nim_device *dev, UINT16 *agc);
-static INT32 nim_s3501_get_SNR(struct nim_device *dev, UINT16 *snr);
+static INT32 nim_s3501_get_AGC(struct nim_device *dev, UINT8 *agc);
+static INT32 nim_s3501_get_SNR(struct nim_device *dev, UINT8 *snr);
 static INT32 nim_s3501_get_BER(struct nim_device *dev, UINT32 *RsUbc);
 ////static INT32 nim_s3501_get_PER(struct nim_device *dev, UINT32 *RsUbc);//question
 static INT32 nim_s3501_get_LDPC(struct nim_device *dev, UINT32 *RsUbc);
@@ -523,6 +523,7 @@ INT32 nim_reg_write(struct nim_device *dev, UINT8 bMemAdr, UINT8 *pData, UINT8 b
 #else
 INT32 nim_reg_write(struct nim_device *dev, UINT8 bMemAdr, UINT8 *pData, UINT8 bLen)
 {
+	int i;
 	int ret;
 	u8 buf[1 + bLen];
 
@@ -530,14 +531,11 @@ INT32 nim_reg_write(struct nim_device *dev, UINT8 bMemAdr, UINT8 *pData, UINT8 b
 
 	struct i2c_msg i2c_msg = { .addr = dev->base_addr, .flags = 0, .buf = buf, .len = 1 + bLen };
 
-	#if defined(NIM_S3501_DEBUG)
-	int i;
 	for (i = 0; i < bLen; i++)
 	{
 		printk("%02x ", pData[i]);
 	}
 	printk("\n");
-	#endif  /* NIM_S3501_DEBUG */
 
 	priv_mem = (struct nim_s3501_private *)dev->priv;
 
@@ -1223,10 +1221,8 @@ static INT32 nim_set_ts_rs(struct nim_device *dev, UINT32 Rs)
 	UINT8 data;
 	UINT32 temp;
 
-	Rs=((Rs<<10) + 500) / 1000;
-	temp = (Rs * 204 + 94) / 188; // rs *2 *204/188
-	temp = temp + 1024; // add 1M symbol rate for range.
-
+	temp = Rs * 204 / 188; // rs *2 *204/188
+	temp = temp + 1000; // add 1M symbol rate for range.
 	data = temp & 0xff;
 	nim_reg_write(dev, RDD_TS_OUT_DVBS, &data, 1);
 	data = (temp >> 8) & 0xff;
@@ -1479,7 +1475,11 @@ static INT32 nim_s3501_get_bit_rate(struct nim_device *dev, UINT8 work_mode, UIN
            YWOSTRACE(( YWOS_TRACE_ERROR, "Map type error: %02x \n", map_type));
 		}
 
-		if ((priv->Tuner_Config_Data.QPSK_Config & M3501_USE_188_MODE) != M3501_USE_188_MODE)
+		if ((priv->Tuner_Config_Data.QPSK_Config & M3501_USE_188_MODE) == M3501_USE_188_MODE)
+		{
+			temp = temp;
+		}
+		else
 		{
 			temp = (temp * 204 + 94) / 188;
 		}
@@ -1583,7 +1583,7 @@ static INT32 nim_s3501_set_ts_mode(struct nim_device *dev, UINT8 work_mode, UINT
 			{
 				//   If >98, M3602 need configure DMX clock phase:
 				//    0xb8012000  ==  0x......AB -> 0x......AA
-				if (((bit_rate <= 98) || (bit_rate >= ssi_clock_tab[8])) && channel_change_flag)
+				if (((bit_rate >= 98) || (bit_rate <= ssi_clock_tab[8])) && channel_change_flag)
 				{
 					// USE normal SPI
 					//#ifdef USE_188_MODE
@@ -1844,8 +1844,7 @@ static INT32 nim_s3501_get_phase_error(struct nim_device *dev, INT32 *phase_erro
 static INT32 nim_s3501_set_phase_noise(struct nim_device *dev)
 {
 	UINT32 debug_time, debug_time_thre, i;
-	UINT8 data, verdata, sdat;
-	UINT16 snr;
+	UINT8 snr, data, verdata, sdat;
 	UINT32 ber, per;
 	UINT32 min_per, max_per;
 	UINT32 per_buf[4] =
@@ -1998,7 +1997,7 @@ static INT32 nim_s3501_waiting_channel_lock(/*TUNER_ScanTaskParam_T *Inst,*/
 
 	if (priv->ul_status.m_s3501_type == NIM_CHIP_ID_M3501B)
 		locktimes *= 2; //lwj change *3 to *2
-	else 
+	else
 		locktimes *= 2;
 
     //TuneStartTime = YWOS_TimeNow();
@@ -2024,7 +2023,7 @@ static INT32 nim_s3501_waiting_channel_lock(/*TUNER_ScanTaskParam_T *Inst,*/
 		}
 
 		nim_reg_read(dev, R02_IERR, &intdata, 1);
-//my commit        printk("###########R02_IERR intdata = 0x%x\n", intdata);
+        printk("###########R02_IERR intdata = 0x%x\n", intdata);
 		//intdata |= 0x02;
 		data = 0x02;
 		if (0 != (intdata & data))
@@ -2155,7 +2154,7 @@ static INT32 nim_s3501_waiting_channel_lock(/*TUNER_ScanTaskParam_T *Inst,*/
 						priv->t_Param.t_snr_thre1 = 55;
 						priv->t_Param.t_snr_thre2 = 65;
 					}
-					else if (code_rate == 9)
+					else if (code_rate == 8)
 					{
 						// coderate8/9
 						priv->t_Param.t_snr_thre1 = 75;
@@ -2670,7 +2669,7 @@ static INT32 nim_s3501_get_code_rate(struct nim_device *dev, UINT8 *code_rate)
 *****************************************************************************/
 // get signal intensity
 
-static INT32 nim_s3501_get_AGC(struct nim_device *dev, UINT16 *agc)
+static INT32 nim_s3501_get_AGC(struct nim_device *dev, UINT8 *agc)
 {
 	UINT8 data;//, temp;
 	//INT16  idata;
@@ -2697,7 +2696,6 @@ static INT32 nim_s3501_get_AGC(struct nim_device *dev, UINT16 *agc)
 	{
 		//CR0B
 		nim_reg_read(dev, R07_AGC1_CTRL + 0x04, &data, 1);
-#if 0 // ????
 		data = 255 - data;
 
 		if (0x40 <= data)
@@ -2709,7 +2707,6 @@ static INT32 nim_s3501_get_AGC(struct nim_device *dev, UINT16 *agc)
 
 		data /= 2;
 		data += 16;
-#endif // 0
 		*agc = (UINT8) data;
 	}
 
@@ -2791,7 +2788,7 @@ static INT32 nim_get_symbol(struct nim_device *dev)
 *
 * Return Value: INT32
 *****************************************************************************/
-static INT32 nim_s3501_get_SNR(struct nim_device *dev, UINT16 *snr)
+static INT32 nim_s3501_get_SNR(struct nim_device *dev, UINT8 *snr)
 {
 	//UINT8 work_mode;//, map_type;
 	UINT8 lock; //coderate,
@@ -3581,8 +3578,8 @@ INT32 nim_s3501_get_bitmode(struct nim_device *dev, UINT8 *bitMode)
 		*bitMode = 0x00;
 	else if ((priv->Tuner_Config_Data.QPSK_Config & 0xc0) == M3501_4BIT_MODE)
 		*bitMode = 0x20;
-//	else if ((priv->Tuner_Config_Data.QPSK_Config & 0xc0) == M3501_8BIT_MODE)
-//		*bitMode = 0x40;
+	else if ((priv->Tuner_Config_Data.QPSK_Config & 0xc0) == M3501_8BIT_MODE)
+		*bitMode = 0x40;
 	else
 		*bitMode = 0x40;
 	return SUCCESS;
@@ -3640,9 +3637,7 @@ static INT32 nim_s3501_i2c_open(struct nim_device *dev)
 	struct nim_s3501_private *priv = (struct nim_s3501_private *) dev->priv;
 	nim_s3501_clear_err(dev);
 
-	#if defined(NIM_S3501_DEBUG)
 	printk("nim_s3501_i2c_open priv->Tuner_Config_Data.QPSK_Config = 0x%x\n",priv->Tuner_Config_Data.QPSK_Config);
-	#endif
 	if (priv->Tuner_Config_Data.QPSK_Config & M3501_I2C_THROUGH)
 	{
 		UINT8 data, ver_data;
@@ -3885,9 +3880,9 @@ static INT32 nim_s3501_cr_setting(struct nim_device *dev, UINT8 s_Case)
 		data = 0x87;
 		nim_reg_write(dev, R33_CR_CTRL + 0x05, &data, 1);
 
-//		if (priv->ul_status.m_s3501_type == NIM_CHIP_ID_M3501B)
-//			data = 0xaa;
-//		else
+		if (priv->ul_status.m_s3501_type == NIM_CHIP_ID_M3501B)
+			data = 0xaa;
+		else
 			data = 0xaa; // S2 CR parameter
 
 		nim_reg_write(dev, RB5_CR_PRS_TRA, &data, 1);
@@ -4446,6 +4441,7 @@ static int d3501_init(struct dvb_frontend *fe)
 	struct dvb_d3501_fe_state *state = fe->demodulator_priv;
 	//dprintk(10, "%s <\n", __FUNCTION__);
 	return nim_s3501_open(&state->spark_nimdev);
+	return 0;
 }
 
 static void d3501_release(struct dvb_frontend *fe)
@@ -4473,15 +4469,13 @@ static int d3501_read_snr(struct dvb_frontend* fe, u16* snr)
 	int 	iRet;
 	struct dvb_d3501_fe_state *state = fe->demodulator_priv;
 
-    iRet = nim_s3501_get_SNR(&state->spark_nimdev, (UINT16*)snr); //quality
+    iRet = nim_s3501_get_SNR(&state->spark_nimdev, (UINT8*)snr); //quality
     if (*snr < 30)
         *snr = *snr * 7 / 3;
     else
         *snr = *snr / 3 + 60;
 	if(*snr > 90)
 		*snr = 90;
-	*snr = *snr * 255 * 255 / 100;
-	printk("*snr = %d\n", *snr);
 	return iRet;
 }
 
@@ -4489,11 +4483,10 @@ static int d3501_read_signal_strength(struct dvb_frontend* fe,
 											u16 *strength)
 {
 	int 	iRet;
-	UINT16 	*Intensity = (UINT16*)strength;
+	UINT8 	*Intensity = (UINT8*)strength;
 	struct dvb_d3501_fe_state *state = fe->demodulator_priv;
 
-    iRet = nim_s3501_get_AGC(&state->spark_nimdev, (UINT16*)Intensity);  //level
-#if 0
+    iRet = nim_s3501_get_AGC(&state->spark_nimdev, (UINT8*)Intensity);  //level
     //lwj add begin
 	if(*Intensity>90)
         *Intensity = 90;
@@ -4506,12 +4499,7 @@ static int d3501_read_signal_strength(struct dvb_frontend* fe,
 	printk("*Intensity = %d\n", *Intensity);
 	*strength = *Intensity;
 	printk("*strength = %d\n", *strength);
-	*strength = *strength * 0xffff / 100;
     //lwj add end
-#endif // 0
-	*Intensity = *Intensity * 255 * 255 / 100;
-	*strength = *Intensity;
-	printk("*strength = %d\n", *strength);
 	return iRet;
 }
 
@@ -4524,11 +4512,7 @@ static int d3501_read_status(struct dvb_frontend *fe, enum fe_status *status)
 	struct dvb_d3501_fe_state *state = fe->demodulator_priv;
 
     iRet = nim_s3501_get_lock(&state->spark_nimdev, &lock);
-
-	#if defined(NIM_S3501_DEBUG)
 	printk("lock = %d\n", lock);
-	#endif
-
 	if (lock)
 	{
 		*status = FE_HAS_SIGNAL |
@@ -4541,7 +4525,7 @@ static int d3501_read_status(struct dvb_frontend *fe, enum fe_status *status)
 	{
 		*status = 0;
 	}
-#if 0
+
 	if (nim_s3501_i2c_open(&state->spark_nimdev))
 		return S3501_ERR_I2C_NO_ACK;
 
@@ -4554,20 +4538,13 @@ static int d3501_read_status(struct dvb_frontend *fe, enum fe_status *status)
 	}
 
 	if (iTunerLock)
-	{
-		#if defined(NIM_S3501_DEBUG)
 		printk("1. Tuner phase locked\n");
-		#endif
-	}
 	else
-	{
 		printk("1. Tuner unlocked\n");
-	}
 
 
 	if (nim_s3501_i2c_close(&state->spark_nimdev))
 		return S3501_ERR_I2C_NO_ACK;
-#endif  /* 0 */
 
 	return iRet;
 }
@@ -5281,7 +5258,7 @@ static int d3501_get_info(struct dvb_frontend *fe,
 {
 	//struct dvb_d0367_fe_ofdm_state* state = fe->demodulator_priv;
 	/* get delivery system info */
-	if(fe_info->delivery == DVBFE_DELSYS_DVBS2)
+	if(fe_info->delivery == DVBFE_DELSYS_DVBS)
 	{
 		return 0;
 	}
@@ -5299,9 +5276,7 @@ static int d3501_get_property(struct dvb_frontend *fe, struct dtv_property* tvp)
 	/* get delivery system info */
 	if(tvp->cmd==DTV_DELIVERY_SYSTEM){
 		switch (tvp->u.data) {
-		case SYS_DVBS2:
 		case SYS_DVBS:
-		case SYS_DSS:
 			break;
 		default:
 			return -EINVAL;
@@ -5473,8 +5448,7 @@ static struct dvb_frontend_ops spark_d3501_ops = {
 		.symbol_rate_max 	= 45000000,
 		.caps			= FE_CAN_INVERSION_AUTO |
 					  FE_CAN_FEC_AUTO       |
-					  FE_CAN_QPSK		|
-					  FE_CAN_2G_MODULATION
+					  FE_CAN_QPSK
 	},
 
 	.init				= d3501_init,
@@ -5572,7 +5546,6 @@ static int d3501_initition(struct nim_device *dev, struct i2c_adapter	*i2c)
 	priv_mem->bLock = FALSE;
 
 	priv_mem->Tuner_Config_Data.QPSK_Config = 0xe9;  //lwj
-	//priv_mem->Tuner_Config_Data.QPSK_Config = 0x29;  //lf
 
 	nim_s3501_get_type(dev);
     if (priv_mem->ul_status.m_s3501_type == NIM_CHIP_ID_M3501A && 			// Chip 3501A
@@ -5608,7 +5581,6 @@ struct dvb_frontend* dvb_d3501_fe_qpsk_attach(
 	/* allocate memory for the internal state */
 	state = kmalloc(sizeof(struct dvb_d3501_fe_state), GFP_KERNEL);
 	if (state == NULL) goto error;
-	memset(state, 0, sizeof(struct dvb_d3501_fe_state));
 
 	/* create dvb_frontend */
 	memcpy(&state->frontend.ops, &spark_d3501_ops, sizeof(struct dvb_frontend_ops));
@@ -5670,7 +5642,6 @@ struct dvb_frontend* dvb_d3501_fe_qpsk_attach(
     }
     #endif  /* 0 */
 
-	state->frontend.id = config->i;
 	return &state->frontend;
 
 error:

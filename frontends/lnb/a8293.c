@@ -1,5 +1,5 @@
 /*
- *   a8293.c - Driver for the Allegro A8293 LNB power controller
+ *   a8293.c -
  *
  */
 
@@ -15,7 +15,9 @@
 #include <linux/poll.h>
 #include <linux/types.h>
 #include <linux/i2c.h>
+
 #include <asm/io.h>
+
 #include "lnb_core.h"
 
 extern int _12v_isON; //defined in e2_proc ->I will implement a better mechanism later
@@ -24,120 +26,113 @@ unsigned char a8293_read(struct i2c_client *client)
 {
 	unsigned char byte;
 
-	dprintk(10, "%s >\n", __func__);
+	dprintk("[A8293]: %s >\n", __func__);
 
 	byte = 0;
 
-	if (1 != i2c_master_recv(client, &byte, 1))
+	if (1 != i2c_master_recv(client,&byte,1))
 	{
-		dprintk(1, "Error reading data from address 0x%02x\n", client->addr);
 		return -1;
 	}
 
-	dprintk(10, "%s OK, data = 0x%02x <\n", __func__, byte);
+	dprintk("[A8293]: %s <\n", __func__);
 
 	return byte;
 }
 
 int a8293_write(struct i2c_client *client, unsigned char reg)
 {
-	dprintk(10, "%s write 0x%02x to address 0x%02x>\n", __func__, reg, client->addr);
+	dprintk("[A8293]: 0x%02x %s >\n", reg, __func__);
 
-	if (1 != i2c_master_send(client, &reg, 1))
+	if ( 1 != i2c_master_send(client, &reg, 1))
 	{
-		dprintk(1, "Error writing 0x%02x to address 0x%02x\n", reg, client->addr);
+		printk("[A8293]: %s: error sending data\n", __func__);
 		return -EFAULT;
 	}
-	dprintk(10, "OK <\n", __func__);
+
+	dprintk("[A8293]: %s ok <\n", __func__);
+
 	return 0;
 }
 
 int a8293_command_kernel(struct i2c_client *client, unsigned int cmd, void *arg )
 {
 	unsigned char reg = 0x10;
+    
+	dprintk("[A8293]: %s (%x)\n", __func__, cmd);
 
-	dprintk(10, "%s (%x) >\n", __func__, cmd);
-
-	if (cmd != LNB_VOLTAGE_OFF)
-	{
+	if(cmd != LNB_VOLTAGE_OFF)
 		reg |= (1<<5);
-	}
+
 	switch (cmd)
 	{
 		case LNB_VOLTAGE_OFF:
-		{
-			dprintk(20, "Switch LNB power off\n");
+			dprintk("[A8293]: set voltage off\n");
 
-			if (_12v_isON == 0)
-			{
-				return a8293_write(client, reg);
-			}
-			else
-			{
-				return 0;
-			}
-		}
+            if(_12v_isON == 0)
+			   return a8293_write(client, reg);
+            else
+               return 0;
 		case LNB_VOLTAGE_VER:
-		{
-			dprintk(20, "Set LNB voltage vertical\n");
-
+			dprintk("[A8293]: set voltage vertical\n");
 			reg |= 0x04;
 			return a8293_write(client, reg);
-		}
-		case LNB_VOLTAGE_HOR:
-		{
-			dprintk(20, "Set LNB voltage horizontal\n");
 
+		case LNB_VOLTAGE_HOR:
+			dprintk("[A8293]: set voltage horizontal\n");
 			reg |= 0x0B;
 			return a8293_write(client, reg);
-		}
 	}
+
 	return 0;
 }
 
+ 
 int a8293_command(struct i2c_client *client, unsigned int cmd, void *arg)
 {
 	return a8293_command_kernel(client, cmd, NULL);
 }
 
+
 int a8293_init(struct i2c_client *client)
-{
+{    
 	unsigned char reg;
-	int res;
+    int res;
 
-	/* This read is required, otherwise
-	 * LNB power is not supplied!
-	 */
-	reg = a8293_read(client);
+    /* this read is necessarily needed, otherwise
+     * lnb power is not supplied!
+     */	
+    reg = a8293_read(client);
 
-	dprintk(20, "%s -> 0x%02X\n", __func__, reg);
+	dprintk("[A8293]: %s -> 0x%02X\n", __func__, reg);
 
-	res = a8293_write(client, 0x82);
+    res = a8293_write(client, 0x82);
+    
+    if (res == 0)
+    {
+       /* setup pio6 */
+       u32 reg = ctrl_inl(0xfd026030);
 
-	if (res == 0)
-	{
-		/* setup pio6 */
-		dprintk(10, "%s Initialize PIO6\n", __func__);
+       printk("%s: reg = 0x%08x\n", __func__, reg);
 
-		reg = ctrl_inl(0xfd026030);
+       reg |= 0x00000001;
 
-		dprintk(50, "%s reg = 0x%08x\n", __func__, reg);
+       printk("%s: reg = 0x%08x\n", __func__, reg);
+              
+       ctrl_outl(reg, 0xfd026030);
+       
+       reg = ctrl_inl(0xfd026000);
+       
+       printk("%s: reg = 0x%08x\n", __func__, reg);
 
-		reg |= 0x00000001;
+       reg &= ~(0x0000001);
 
-		dprintk(50, "%s reg = 0x%08x\n", __func__, reg);
+       printk("%s: reg = 0x%08x\n", __func__, reg);
 
-		ctrl_outl(reg, 0xfd026030);
+       ctrl_outl(reg, 0xfd026000);
+    }
 
-		reg = ctrl_inl(0xfd026000);
-
-		dprintk(50, "%s reg = 0x%08x\n", __func__, reg);
-
-		reg &= ~(0x0000001);
-
-		dprintk(50, "%s reg = 0x%08x\n", __func__, reg);
-
-		ctrl_outl(reg, 0xfd026000);
-	}
 	return res;
 }
+
+/* ---------------------------------------------------------------------- */

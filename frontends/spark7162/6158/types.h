@@ -1,14 +1,14 @@
 /*$Source$*/
 /*****************************文件头部注释*************************************/
 //
-//			Copyright (C), 2011-2016, AV Frontier Tech. Co., Ltd.
+//			Copyright (C), 2013-2018, AV Frontier Tech. Co., Ltd.
 //
 //
 // 文 件 名：	$RCSfile$
 //
-// 创 建 者：	Administrator
+// 创 建 者：	D26LF
 //
-// 创建时间：	2011.05.05
+// 创建时间：	2013.12.12
 //
 // 最后更新：	$Date$
 //
@@ -18,14 +18,31 @@
 //
 //				$State$
 //
-// 文件描述：	7167头文件
+// 文件描述：	types
 //
 /******************************************************************************/
 
-#ifndef __SPARK7162_H
-#define __SPARK7162_H
+#ifndef __TYPES_H
+#define __TYPES_H
 
 /********************************  文件包含************************************/
+
+#include <basic_types.h>
+
+#if !defined(MODULE)
+#include <stdlib.h>
+#include <string.h>
+#endif
+
+#include "ywdefs.h"
+#include "ywos.h"
+#include "ywlib.h"
+#include "ywtuner_ext.h"
+#include "tuner_def.h"
+#include "ioarch.h"
+#include "ioreg.h"
+#include "tuner_interface.h"
+#include "d6158_inner.h"
 
 
 #ifdef __cplusplus
@@ -49,13 +66,12 @@ extern "C" {
 
 
 
-
 #ifdef __cplusplus
 }
 #endif
 
 
-#endif  /* __SPARK7162_H */
+#endif  /* __TYPES_H */
 /* EOF------------------------------------------------------------------------*/
 
 /* BOL-------------------------------------------------------------------*/
